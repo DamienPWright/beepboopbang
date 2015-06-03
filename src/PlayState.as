@@ -22,6 +22,7 @@ package
 		public var blockBoundaryRight:Number = 272;
 		public var numBlockRows:Number = 14;
 		public var blocksPerRow:Number = blockBoundaryLeft - blockBoundaryRight / 16 + 1;
+		public var blocksPerColumn:Number = 8;
 		public var blocks:FlxGroup;
 		public var blockRow:FlxGroup;
 		public var backRowRef:FlxGroup;
@@ -78,7 +79,7 @@ package
 				add(_level);
 				
 				//PLAYER
-				player = new Player(FlxG.width / 2, 0);
+				player = new Player(FlxG.width / 2, 128);
 				add(player);
 				
 				//BULLETS
@@ -93,14 +94,16 @@ package
 				//BLOCKS
 				blocks = new FlxGroup();
 				for (var i:int = 0; i < numBlockRows; i++) {
-					var newRow:FlxGroup = generateBlockRow( -16 - (i * 16));
-					blocks.add(newRow);
+					var newColumn:BlockColumn = new BlockColumn(32 + (i * 16));
+					blocks.add(newColumn);
+					/*
 					if (i == 0) {
-						frontRowRef = newRow;
+						frontRowRef = newColumn;
 					}
 					if (i == numBlockRows - 1) {
-						backRowRef = newRow;
+						backRowRef = newColumn;
 					}
+					*/
 				}
 				add(blocks);
 				
@@ -161,7 +164,7 @@ package
 			FlxG.overlap(playerBullets, blocks, bulletHitBlocks);
 			FlxG.overlap(playerBullets, _level, bulletHitLevel);
 			FlxG.overlap(hitBoxes, blocks, hitBoxBlockCollide);
-			
+			/*
 			if (backRowRef.countLiving() > 0) {
 				backRowBlock = backRowRef.getFirstAlive() as FlxSprite;
 			}
@@ -181,7 +184,7 @@ package
 			if (frontRowBlock.y >= groundLevel) {
 				 groundReached = true;
 			}
-			
+			*/
 			if(_drawDebug){
 				debugStuff();
 			}
@@ -202,6 +205,34 @@ package
 			//if (blocks[0][0].y >= groundLevel) {
 			//	stopBlocks();
 			//}
+		}
+		
+		public function generateBlockColumn(X:Number):FlxGroup {
+			var column:FlxGroup = new FlxGroup(blocksPerColumn);
+			
+			for (var i:int = 0; i <= blocksPerColumn; i++) {
+				var rand:int = FlxG.random() * 100;
+				var newblock;
+				var blockY:Number;
+				
+				blockY = 128 - (16 * i);
+				
+				if(rand <= 3){
+					newblock = new BlockBomb(X, blockY);
+				}else if(rand <= 20){
+					newblock = new BlockSpike(X, blockY);
+				}else if(rand <= 21){
+					newblock = new BlockLineExplosionHor(X, blockY);
+				}else if(rand <= 22){
+					newblock = new BlockLineExplosionVer(X, blockY);
+				}else{
+					newblock = new Block(X, blockY);
+				}
+				
+				newblock.immovable = true;
+				column.add(newblock);
+			}
+			return column;
 		}
 		
 		public function generateBlockRow(Y:Number):FlxGroup {
@@ -275,7 +306,7 @@ package
 			var yvalue:String = "";
 			for (var i = 0; i < blocks.length; i++) {
 				if(blocks.members[i].countLiving() > 0){
-					yvalue = String(blocks.members[i].members[0].y);
+					yvalue = String(blocks.members[i].getHighestY());
 					debugString += String(i) + ": y: " + yvalue + "\n";
 				}
 			}
