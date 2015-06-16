@@ -16,6 +16,8 @@ package
 		private var timeBetweenShots:Number = 0.14;
 		private var shootTimer:Number = 0;
 		
+		private var bulletColor:int = 0;
+		
 		public function Player(X:Number, Y:Number) 
 		{
 			super(X, Y);

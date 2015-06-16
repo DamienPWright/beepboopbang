@@ -225,7 +225,7 @@ package
 					newblock = new BlockLineExplosionHor(X, blockY);
 				}else if(rand <= 22){
 					newblock = new BlockLineExplosionVer(X, blockY);
-				}else{
+				}else {
 					newblock = new Block(X, blockY);
 				}
 				
@@ -282,7 +282,8 @@ package
 		
 		public function bulletHitBlocks(bullet:PlayerBullet, block:Block) {
 			bullet.destroyBullet();
-			if(block.y > -16){
+			if (block.y > -16) {
+				trace(block.getBlockColor());
 				block.killBlock();
 			}
 		}
